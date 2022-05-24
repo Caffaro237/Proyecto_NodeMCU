@@ -149,9 +149,9 @@ void loop()
 
   //Esperara cada valor de las variables de los pines en este caso digitales
   //TODO: pasar todo a pines virtuales
-  banderaLuzTecho = luzTecho_f(banderaLuzTecho);
-  banderaBlancoTenue = blancoTenue_f(banderaBlancoTenue, banderaColorFade);
-  banderaColorFade = colorFade_f(banderaColorFade);
+  banderaLuzTecho = fnLuzTecho(banderaLuzTecho);
+  banderaBlancoTenue = fnBlancoTenue(banderaBlancoTenue, banderaColorFade);
+  banderaColorFade = fnColorFade(banderaColorFade);
   banderaColorRandom = fnColoresRandom(banderaColorRandom);
 
   //Serial.println(velocidadRandom);
@@ -161,7 +161,7 @@ void loop()
   delay(100);
 }
 
-int luzTecho_f(int bandera)
+int fnLuzTecho(int bandera)
 {
   if(!luzTecho && !bandera)
   {
@@ -188,7 +188,7 @@ int luzTecho_f(int bandera)
   return bandera;
 }
 
-int blancoTenue_f(int bandera1, int bandera2)
+int fnBlancoTenue(int bandera1, int bandera2)
 {
   if(!blancoTenue && !bandera1 && bandera2)
   {
@@ -220,7 +220,7 @@ int blancoTenue_f(int bandera1, int bandera2)
   return bandera1;
 }
 
-int colorFade_f(int bandera)
+int fnColorFade(int bandera)
 {
   if(!colorFade && !bandera)
   {
@@ -264,19 +264,19 @@ int colorFade_f(int bandera)
     bandera = 1;
 
     Serial.println("BLANCO");
-    crossFade(blanco);
+    fnCrossFade(blanco);
     Serial.println("VIOLETA");
-    crossFade(violeta);
+    fnCrossFade(violeta);
     Serial.println("AZUL");
-    crossFade(azul);
+    fnCrossFade(azul);
     //Serial.println("ROSA");
-    //crossFade(rosa);
+    //fnCrossFade(rosa);
     Serial.println("ROJO");
-    crossFade(rojo);
+    fnCrossFade(rojo);
     Serial.println("NARANJA");
-    crossFade(naranja);
+    fnCrossFade(naranja);
     Serial.println("VERDE");
-    crossFade(verde);
+    fnCrossFade(verde);
   }
   
   return bandera;
@@ -361,7 +361,7 @@ int fnColoresRandom(int bandera)
   return bandera;
 }
 
-int calcularStep(int valorPrevio, int valorFinal)
+int fnCalcularStep(int valorPrevio, int valorFinal)
 {
   int step = valorFinal - valorPrevio;
 
@@ -373,7 +373,7 @@ int calcularStep(int valorPrevio, int valorFinal)
   return step;
 }
 
-int calcularValor(int step, int valor, int i)
+int fnCalcularValor(int step, int valor, int i)
 {
   if((step) && i % step == 0)
   {
@@ -398,16 +398,16 @@ int calcularValor(int step, int valor, int i)
   return valor;
 }
 
-void crossFade(int color[3])
+void fnCrossFade(int color[3])
 {
   // Conversor de 0 a 255
   int rojo = (color[0] * 255) / 100;
   int verde = (color[1] * 255) / 100;
   int azul = (color[2] * 255) / 100;
 
-  int stepRojo = calcularStep(prevRojo, rojo);
-  int stepVerde = calcularStep(prev_verde, verde);
-  int stepAzul = calcularStep(prevAzul, azul);
+  int stepRojo = fnCalcularStep(prevRojo, rojo);
+  int stepVerde = fnCalcularStep(prev_verde, verde);
+  int stepAzul = fnCalcularStep(prevAzul, azul);
 
   for (int i = 0; i <= 1020; i++)
   {
@@ -424,9 +424,9 @@ void crossFade(int color[3])
       break;
     }
     
-    valorRojo = calcularValor(stepRojo, valorRojo, i);
-    valorVerde = calcularValor(stepVerde, valorVerde, i);
-    valorAzul = calcularValor(stepAzul, valorAzul, i);
+    valorRojo = fnCalcularValor(stepRojo, valorRojo, i);
+    valorVerde = fnCalcularValor(stepVerde, valorVerde, i);
+    valorAzul = fnCalcularValor(stepAzul, valorAzul, i);
 
     analogWrite(pinRojo, valorRojo);
     analogWrite(pinVerde, valorVerde);
