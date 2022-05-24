@@ -1,0 +1,8 @@
+20220524 v1.1.1
+	- Se agrega logica para mostrar por una terminal dentro de la aplicacion la fecha y hora de ejecucion
+
+20220524 v1.1.0
+	- Se modifican todas las variables para no tener una separaciuon por _
+
+20220524 v1.0.0
+	- Se sube una version proncipal del proyecto para NodeMCU
