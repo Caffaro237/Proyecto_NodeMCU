@@ -1,5 +1,5 @@
 //Proyecto para NodeMCU y Aplicacion Blynk
-//Version 1.1.2
+//Version 1.1.1
 
 #define BLYNK_PRINT Serial
 
