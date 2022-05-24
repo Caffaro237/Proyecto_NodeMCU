@@ -1,4 +1,5 @@
 //Proyecto para NodeMCU y Aplicacion Blynk
+//Version 1.1.2
 
 #define BLYNK_PRINT Serial
 
@@ -58,7 +59,7 @@ int luzTecho = LOW;
 int colorRandom = LOW;
 int colorRandomRapido = LOW;
 int colorRandomLento = LOW;
-int velocidad_random = 0;
+int velocidadRandom = 0;
 
 int banderaColorFade = 0;
 int banderaBlancoTenue = 0;
@@ -70,6 +71,27 @@ int i = 0;
 int prevRojo = valorRojo;
 int prev_verde = valorVerde;
 int prevAzul = valorAzul;
+
+//Variables para la fecha con NTPClient
+const long utcOffsetInSeconds = -10800;
+
+char daysOfTheWeek[7][12] = 
+  {
+    "Domingo", 
+    "Lunes", 
+    "Martes", 
+    "Miercoles", 
+    "Jueves", 
+    "Viernes", 
+    "Sabado"
+  };
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "south-america.pool.ntp.org", utcOffsetInSeconds);
+String concatStrDate = "";
+
+//Variables Virtuales Vx
+int terminal = 0;
 
 void setup()
 {
@@ -91,6 +113,25 @@ void setup()
   //Los virtual pin se pueden usar tanto de lectura como escritura
   //En este caso se esta usando de escritura para poder escribir
   //en una terminal de la aplicacion Blynk
+  Blynk.virtualWrite(terminal, "clr");
+  Blynk.virtualWrite(terminal, "Conectado al cuarto de Facu\n");
+
+  //Inicia la conexion con la red para recibir la hora y mostrarla por la terminal
+  timeClient.begin();
+  timeClient.update();
+  
+  //Concatena en un string toda la informacion para mostrar el dia y la hora
+  concatStrDate += daysOfTheWeek[timeClient.getDay()];
+  concatStrDate += " - ";
+  concatStrDate += timeClient.getHours();
+  concatStrDate += ":";
+  concatStrDate += timeClient.getMinutes();
+  concatStrDate += ":";
+  concatStrDate += timeClient.getSeconds();
+  concatStrDate += "\n";
+
+  Blynk.virtualWrite(terminal, "Ultimo dia y hora de ejecucion: ");
+  Blynk.virtualWrite(terminal, concatStrDate);
 }
 
 void loop()
@@ -104,7 +145,7 @@ void loop()
   colorRandomRapido = digitalRead(pinColorRandomRapido);
   colorRandomLento = digitalRead(pinColorRandomLento);
 
-  //velocidad_random = analogRead(pinLuzTecho);
+  //velocidadRandom = analogRead(pinLuzTecho);
 
   //Esperara cada valor de las variables de los pines en este caso digitales
   //TODO: pasar todo a pines virtuales
@@ -113,7 +154,7 @@ void loop()
   banderaColorFade = colorFade_f(banderaColorFade);
   banderaColorRandom = fnColoresRandom(banderaColorRandom);
 
-  //Serial.println(velocidad_random);
+  //Serial.println(velocidadRandom);
   
   Blynk.run();
   
