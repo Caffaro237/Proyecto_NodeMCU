@@ -1,8 +1,12 @@
+20220525 v1.1.2
+ - Se modifica la logica para pasar de tener variables a travez de los pines digitales a los pines virtuales
+ - Se agrega boton para reseteo desde la aplicacion
+
 20220524 v1.1.1
-	- Se agrega logica para mostrar por una terminal dentro de la aplicacion la fecha y hora de ejecucion
+ - Se agrega logica para mostrar por una terminal dentro de la aplicacion la fecha y hora de ejecucion
 
 20220524 v1.1.0
-	- Se modifican todas las variables para no tener una separaciuon por _
+ - Se modifican todas las variables para no tener una separaciuon por _
 
 20220524 v1.0.0
-	- Se sube una version proncipal del proyecto para NodeMCU
+ - Se sube una version proncipal del proyecto para NodeMCU
