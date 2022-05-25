@@ -44,13 +44,6 @@ int contadorLoop = 60;
 int repetir = 999999999;
 int j = 0;
 
-//Variables extras
-int pinColorFade = 16; //Pin D0
-int pinVelocidadRandom = A0; //Pin A0
-int pinColorRandomRapido = 12; //Pin D6
-int pinColorRandomLento = 3; //Pin D9
-int pinLuzTecho = 15; //Pin D8
-
 int colorFade = LOW;
 int blancoTenue = LOW;
 int luzTecho = LOW;
@@ -129,8 +122,6 @@ BLYNK_WRITE(V9)  //Pin V9
   resetMCU = param.asInt();
 }
 
-int pinColorRandom = 4; //Pin D2
-
 void setup()
 {
   pinMode(pinRojo, OUTPUT);
@@ -174,10 +165,6 @@ void setup()
 
 void loop()
 {
-  //Toma los valores de los pines
-  //Estos son modificados desde la aplicacion Blynk
- 
-
   if(resetMCU)
   {
     ESP.reset();
@@ -302,8 +289,6 @@ int fnColorFade(int bandera)
     fnCrossFade(violeta);
     Serial.println("AZUL");
     fnCrossFade(azul);
-    //Serial.println("ROSA");
-    //fnCrossFade(rosa);
     Serial.println("ROJO");
     fnCrossFade(rojo);
     Serial.println("NARANJA");
@@ -341,10 +326,6 @@ int fnColoresRandom(int bandera)
 
     for(i = 0; i < repetir; i++)
     {
-      //colorRandom = digitalRead(pinColorRandom);
-      //colorRandomRapido = digitalRead(pinColorRandomRapido);
-      //colorRandomLento = digitalRead(pinColorRandomLento);
-
       if(colorRandomLento)
       {
         tiempo = 450;
