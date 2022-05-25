@@ -1,5 +1,5 @@
 //Proyecto para NodeMCU y Aplicacion Blynk
-//Version 1.1.1
+//Version 1.1.2
 
 #define BLYNK_PRINT Serial
 
@@ -44,15 +44,6 @@ int contadorLoop = 60;
 int repetir = 999999999;
 int j = 0;
 
-//Variables extras
-int pinColorFade = 16; //Pin D0
-int pinVelocidadRandom = A0; //Pin A0
-int pinColorRandom = 4; //Pin D2
-int pinColorRandomRapido = 12; //Pin D6
-int pinColorRandomLento = 3; //Pin D9
-int pinBlancoTenue = 13; //Pin D7
-int pinLuzTecho = 15; //Pin D8
-
 int colorFade = LOW;
 int blancoTenue = LOW;
 int luzTecho = LOW;
@@ -60,6 +51,7 @@ int colorRandom = LOW;
 int colorRandomRapido = LOW;
 int colorRandomLento = LOW;
 int velocidadRandom = 0;
+int resetMCU = LOW;
 
 int banderaColorFade = 0;
 int banderaBlancoTenue = 0;
@@ -90,8 +82,45 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "south-america.pool.ntp.org", utcOffsetInSeconds);
 String concatStrDate = "";
 
-//Variables Virtuales Vx
-int terminal = 0;
+//Variables Virtuales Vx pudiendo setear hasta 255
+int terminal = 0; //Pin V0
+
+//Toma los valores de las variables virtuales
+//Estos son modificados desde la aplicacion Blynk
+BLYNK_WRITE(V3)  //Pin V3
+{
+  blancoTenue = param.asInt();
+}
+
+BLYNK_WRITE(V4)  //Pin V4
+{
+  colorRandom = param.asInt();
+}
+
+BLYNK_WRITE(V5)  //Pin V5
+{
+  colorRandomRapido = param.asInt();
+}
+
+BLYNK_WRITE(V6)  //Pin V6
+{
+  colorRandomLento = param.asInt();
+}
+
+BLYNK_WRITE(V7)  //Pin V7
+{
+  colorFade = param.asInt();
+}
+
+BLYNK_WRITE(V8)  //Pin V8
+{
+  luzTecho = param.asInt();
+}
+
+BLYNK_WRITE(V9)  //Pin V9
+{
+  resetMCU = param.asInt();
+}
 
 void setup()
 {
@@ -136,16 +165,10 @@ void setup()
 
 void loop()
 {
-  //Toma los valores de los pines
-  //Estos son modificados desde la aplicacion Blynk
-  luzTecho = digitalRead(pinLuzTecho);
-  blancoTenue = digitalRead(pinBlancoTenue);
-  colorFade = digitalRead(pinColorFade);
-  colorRandom = digitalRead(pinColorRandom);
-  colorRandomRapido = digitalRead(pinColorRandomRapido);
-  colorRandomLento = digitalRead(pinColorRandomLento);
-
-  //velocidadRandom = analogRead(pinLuzTecho);
+  if(resetMCU)
+  {
+    ESP.reset();
+  }
 
   //Esperara cada valor de las variables de los pines en este caso digitales
   //TODO: pasar todo a pines virtuales
@@ -153,8 +176,6 @@ void loop()
   banderaBlancoTenue = fnBlancoTenue(banderaBlancoTenue, banderaColorFade);
   banderaColorFade = fnColorFade(banderaColorFade);
   banderaColorRandom = fnColoresRandom(banderaColorRandom);
-
-  //Serial.println(velocidadRandom);
   
   Blynk.run();
   
@@ -239,8 +260,7 @@ int fnColorFade(int bandera)
   {
     if(repetir)
     {
-      j = j + 1;
-      
+      j = j + 1;      
       Serial.print("Repeticion Color Fade: ");
       Serial.println(j);
       
@@ -269,8 +289,6 @@ int fnColorFade(int bandera)
     fnCrossFade(violeta);
     Serial.println("AZUL");
     fnCrossFade(azul);
-    //Serial.println("ROSA");
-    //fnCrossFade(rosa);
     Serial.println("ROJO");
     fnCrossFade(rojo);
     Serial.println("NARANJA");
@@ -308,10 +326,6 @@ int fnColoresRandom(int bandera)
 
     for(i = 0; i < repetir; i++)
     {
-      colorRandom = digitalRead(pinColorRandom);
-      colorRandomRapido = digitalRead(pinColorRandomRapido);
-      colorRandomLento = digitalRead(pinColorRandomLento);
-
       if(colorRandomLento)
       {
         tiempo = 450;
@@ -411,8 +425,6 @@ void fnCrossFade(int color[3])
 
   for (int i = 0; i <= 1020; i++)
   {
-    colorFade = digitalRead(pinColorFade);
-
     Blynk.run();
 
     if(!colorFade)
@@ -420,6 +432,10 @@ void fnCrossFade(int color[3])
       digitalWrite(pinRojo, LOW);
       digitalWrite(pinVerde, LOW);
       digitalWrite(pinAzul, LOW);
+      
+      valorRojo = 0;
+      valorVerde = 0;
+      valorAzul = 0;
 
       break;
     }
