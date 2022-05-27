@@ -1,5 +1,5 @@
 //Proyecto para NodeMCU y Aplicacion Blynk
-//Version 1.1.2
+//Version 1.1.3
 
 #define BLYNK_PRINT Serial
 
@@ -7,6 +7,7 @@
 #include <BlynkSimpleEsp8266.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
+#include <DHT.h>
 
 //Codigo de autenticacion de BLynk
 char auth[] = "e05b08f4e7e542a9b40b46b885948aa6";
@@ -50,7 +51,6 @@ int luzTecho = LOW;
 int colorRandom = LOW;
 int colorRandomRapido = LOW;
 int colorRandomLento = LOW;
-int velocidadRandom = 0;
 int resetMCU = LOW;
 
 int banderaColorFade = 0;
@@ -81,6 +81,13 @@ char daysOfTheWeek[7][12] =
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "south-america.pool.ntp.org", utcOffsetInSeconds);
 String concatStrDate = "";
+
+//Variables para el Sensor de temperatura y Humedad
+
+#define DHTPIN 15 //Pin Entrada, Pin D8
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
 
 //Variables Virtuales Vx pudiendo setear hasta 255
 int terminal = 0; //Pin V0
@@ -133,6 +140,8 @@ void setup()
     Serial.begin(9600);
   }
   
+  dht.begin();
+  
   Blynk.begin(auth, ssid, pass);
   //Se puede especificar un servidor
   //Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
@@ -176,6 +185,13 @@ void loop()
   banderaBlancoTenue = fnBlancoTenue(banderaBlancoTenue, banderaColorFade);
   banderaColorFade = fnColorFade(banderaColorFade);
   banderaColorRandom = fnColoresRandom(banderaColorRandom);
+  
+  
+  //TODO: Comprar un DHT11 y descomentar codigo
+  /*float temp = fnGetTempHum();
+  Blynk.virtualWrite(10, temp);
+  Blynk.virtualWrite(terminal, temp);
+  Blynk.virtualWrite(terminal, " C\n");*/ 
   
   Blynk.run();
   
@@ -239,6 +255,21 @@ int fnBlancoTenue(int bandera1, int bandera2)
   }
   
   return bandera1;
+}
+
+float fnGetTempHum()
+{
+  int h = dht.readHumidity();
+  float t = dht.readTemperature();
+  
+  if (isnan(h) || isnan(t)) 
+  {
+    Serial.println("Error obteniendo los datos del sensor DHT11");
+    Blynk.virtualWrite(terminal, "Error obteniendo los datos del sensor DHT11\n");
+    delay(1000);
+  }
+
+  return t;
 }
 
 int fnColorFade(int bandera)
