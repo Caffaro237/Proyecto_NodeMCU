@@ -1,3 +1,6 @@
+20220525 v1.1.3
+ - Se agrega logica para tomar la temperatura y humedad desde un sensor DHT11
+
 20220525 v1.1.2
  - Se modifica la logica para pasar de tener variables a travez de los pines digitales a los pines virtuales
  - Se agrega boton para reseteo desde la aplicacion
